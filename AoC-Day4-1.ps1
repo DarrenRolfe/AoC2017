@@ -522,13 +522,16 @@ aa ss dd ss dd ff gg
 l kk jj hhggg ff".Split("`n");
 #>
 
+
+# 477
+
 $goodlines = 0
 $count = 0
-$lineval = 0
+#$lineval = 0
 
 foreach ($line in $array) {
     $badline = 0
-    $num = 0
+<#    $num = 0
     do {
         $testline = $array[$num]
         if ($num -ne $lineval) {
@@ -538,7 +541,7 @@ foreach ($line in $array) {
         }
         $num++
     } until ($num -eq $array.Count)
-    $lineval++
+    $lineval++ #>
     $entryval = 0
     $broken = $line -split " "
     foreach ($entry in $broken) {
@@ -546,7 +549,7 @@ foreach ($line in $array) {
         do {
             $word = $broken[$num]
             if ($num -ne $entryval) {
-                if ($word -like $entry) {
+                if ($entry -like $word) {
                     $badline = 1
                 }
             }
