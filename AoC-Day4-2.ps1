@@ -511,8 +511,8 @@ huo esajup ouj oju ujo
 eeeu hwvsk jfkmds okhi pogskfm itdlbll
 lpyubo dylpfb iehwug decj ntidy cuygyg lalkb iutu oxgm imn".Split("`n");
 
-<#  #>
-$array = "abcde abcde
+<#  ".Split("`n"); <#  >
+$array = "abcede abcde
 abcdef ghijk lmnop
 qrstuv tuvrqs cba
 two good phrases".Split("`n");
@@ -522,6 +522,7 @@ two good phrases".Split("`n");
 # 477
 
 $goodlines = 0
+$badlines = 0
 $count = 0
 
 foreach ($line in $array) {
@@ -529,30 +530,42 @@ foreach ($line in $array) {
     $entryval = 0
     $broken = $line -split " "
     foreach ($entry in $broken) {
-        Write-Host "FOREACH: Entry $entry In Broken $broken"
+        #Write-Host "FOREACH: Entry $entry In Broken $broken"
         $num = 0
         do {
             $word = $broken[$num]
-            Write-Host "WORD $word = BROKEN[$num] $broken[$num]"
+            $word = $word.Trim()
+            $entry = $entry.Trim()
             if ($num -ne $entryval) {
                 $charcount = 0
-                $endcount = $entry.Length+1
+                $endcount = $entry.Length-1
+                #Write-Host "WORD $word ($entryval) = $broken ($num)"
                 do {
-                    Write-Host "NUM: $num | ENDCOUNT: $endcount"
-                    if ($word -contains $entry[$charcount]) {
-                        if ($charcount -eq $entry.Length) {
-                            $badline = 1
-                            Write-Host "$count BAD: $word in line '$word'"
+                    [string]$entrychar = $entry[$charcount]
+                    $noof_entry = [regex]::matches($entry,$entrychar).count
+                    $noof_words = [regex]::matches($word,$entrychar).count
+                    $entrylen = $entry.Length
+                    $wordlen = $word.Length
+                    #Write-Host "NOOF E: $noof_entry | NOOF W: $noof_words | ENT: $entrylen (",$entry.Length,") | WORD: $wordlen (",$word.Length,")"
+                    if (($noof_entry -eq $noof_words) -and ($entry.Length -eq $word.Length)) {
+                        #Write-Host "TESTING: $entry"
+                        if ($word -match $entrychar) {
+                            #Write-Host "CHAR $entrychar = WORD: $word"
+                            if ($charcount -eq ($entrylen)) {
+                                $badline = 1
+                                if ($num -eq 1) {
+                                    $badlines++
+                                }
+                                $num = $broken.Count-1
+                                #Write-Host "$count BAD: $word in line '$broken'"
+                            }
+                        } else {
+                            $charcount = $endcount
                         }
-                    } else {
-                        $charcount = $endcount-1
-
                     }
-                    Write-Host "CHARCOUNT: $charcount"
                     $charcount++
-                } until ($charcount -eq $endcount)
+                } until ($charcount -gt $endcount)
             }
-            Write-Host "END NUM: $num"
             $num++
         } until ($num -eq $broken.Count)
         $entryval++
@@ -562,4 +575,6 @@ foreach ($line in $array) {
         $goodlines++
     }
 }
+$total = $count - $badlines
+Write-Host "There are $badlines bad passphrases ($total goodlines)"
 Write-Host "There are $goodlines good passphases out of $count lines"
