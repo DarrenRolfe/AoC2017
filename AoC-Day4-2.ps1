@@ -1,4 +1,4 @@
-﻿$array = "una bokpr ftz ryw nau yknf fguaczl anu
+﻿[string[]]$array = "una bokpr ftz ryw nau yknf fguaczl anu
 tvay wvco bcoblpt fwzg sfsys zvuqll mcbhwz ovcw fgdy
 ynsocz vid rfmsy essqt fpbjvvq sldje qfpvjvb
 yvh nxc kla vhy vkbq cxfzgr
@@ -551,7 +551,7 @@ foreach ($line in $array) {
                         #Write-Host "TESTING: $entry"
                         if ($word -match $entrychar) {
                             #Write-Host "CHAR $entrychar = WORD: $word"
-                            if ($charcount -eq ($entrylen)) {
+                            if ($charcount -eq ($entrylen-1)) {
                                 $badline = 1
                                 if ($num -eq 1) {
                                     $badlines++
