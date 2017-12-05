@@ -521,6 +521,58 @@ two good phrases".Split("`n");
 
 # 477
 
+
+$goodlines = 0
+$count = 0
+
+foreach ($line in $array) {
+    $badline = 0
+    $entryval = 0
+    $broken = $line -split " "
+    foreach ($entry in $broken) {
+        $num = 0
+        do {
+            $word = $broken[$num]
+            $word = $word.Trim()
+            $entry = $entry.Trim()
+            if ($num -ne $entryval) {
+
+                $sortentry = $entry -split('') | sort
+                $entry = [system.String]::Join("",$sortentry)
+                $entry = $entry.Trim()
+                        
+                $sortword = $word -split('') | sort
+                $word = [system.String]::Join("",$sortword)
+                $word = $word.Trim()
+
+                #Write-Host "Comparing: $entry and $word from $line"
+
+                if ($entry -like $word) {
+                    $badline = 1
+                }
+            }
+            if ($badline -eq 1) {
+                $num = $broken.Count
+            } else {
+                $num++
+            }
+        } until ($num -eq $broken.Count)
+        $entryval++
+    }
+    $count++
+    if ($badline -eq 0) {
+        $goodlines++
+    }
+}
+Write-Host "There are $goodlines good passphases out of $count lines"
+
+
+
+<#
+
+
+
+
 $goodlines = 0
 $badlines = 0
 $count = 0
@@ -536,7 +588,9 @@ foreach ($line in $array) {
             $word = $broken[$num]
             $word = $word.Trim()
             $entry = $entry.Trim()
+            <#
             if ($num -ne $entryval) {
+            
                 $charcount = 0
                 $endcount = $entry.Length-1
                 #Write-Host "WORD $word ($entryval) = $broken ($num)"
@@ -548,6 +602,34 @@ foreach ($line in $array) {
                     $wordlen = $word.Length
                     #Write-Host "NOOF E: $noof_entry | NOOF W: $noof_words | ENT: $entrylen (",$entry.Length,") | WORD: $wordlen (",$word.Length,")"
                     if (($noof_entry -eq $noof_words) -and ($entry.Length -eq $word.Length)) {
+
+                        
+
+            if ($num -ne $entryval) {
+
+                $sortentry = $entry -split('') | sort
+                $entry = [system.String]::Join("",$sortentry)
+                        
+                $sortword = $entry -split('') | sort
+                $word = [system.String]::Join("",$sortword)
+
+                Write-Host "Comparing: $entry and $word from $line"
+
+                if ($entry -like $word) {
+                    $badline = 1
+                }
+            }
+            $num++
+       } until ($num -eq $broken.Count)
+        $entryval++
+    }
+    $count++
+    if ($badline -eq 0) {
+        $goodlines++
+    }
+}
+Write-Host "There are $goodlines good passphases out of $count lines"
+<#
                         #Write-Host "TESTING: $entry"
                         if ($word -match $entrychar) {
                             #Write-Host "CHAR $entrychar = WORD: $word"
@@ -562,6 +644,9 @@ foreach ($line in $array) {
                         } else {
                             $charcount = $endcount
                         }
+
+
+
                     }
                     $charcount++
                 } until ($charcount -gt $endcount)
@@ -578,3 +663,4 @@ foreach ($line in $array) {
 $total = $count - $badlines
 Write-Host "There are $badlines bad passphrases ($total goodlines)"
 Write-Host "There are $goodlines good passphases out of $count lines"
+#>
