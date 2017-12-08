@@ -1291,7 +1291,7 @@ gwxeoes (27)
 gynzo (86)
 wnwzo (37)" -split "`n";
 
-<# #>
+<# >
 [string[]]$array = "pbga (66)
 xhth (57)
 ebii (61)
@@ -1321,13 +1321,39 @@ foreach ($line in $array) {
     $numarray1 += ($tower)
     $numarray2 += ($tnum)
 }
+$n = 0
 foreach ($line in $array) {
     $broken = $line -split ","
     $broken = $broken -split "->"
+    $cleanline = $line.Trim()
     $tower = ($broken[0] -split " ")[0].trim()
-    $prenum = ($broken[0] -split " ")[1].trim()
-    $tnum = $prenum.Substring(1,$prenum.Length-2)
-    $count = 0
+    foreach ($checkline in $array) {
+        $checkline = $checkline.Trim()
+        if ($cleanline -notlike $checkline) {
+            if ($checkline -match $tower) {
+                $invalid = 1
+            }
+        }
+    }
+    if ($invalid -eq 0) {
+        Write-Host "Root Tower is: $tower ($n)"
+        $root = $tower
+        $pos = $n
+    }
+    $n++
+    $invalid = 0
+}
+
+# tower-path value
+# root -> lvl1 -> lvl2
+<#
+$list = ($array[$pos] -split ",") -split "->"
+$list = $list[1..$list.Count]
+foreach ($line in $list) {
+    $broken = $line -split ","
+    $broken = $broken -split "->"
+    $tower = ($broken[0] -split " ")[0].trim()
+
     if ($broken.Count -gt 1) {
         Write-Host "$tower has the following weights:" -NoNewline
         $twei = $tnum
@@ -1343,63 +1369,63 @@ foreach ($line in $array) {
             }
         }
         Write-Host "=$twei"
-        Write-Host " "
+        #Write-Host " "
     }
 }
 
+#>
 
+# fwft (72) -> ktlj, cntj, xhth
 
-<#    foreach ($checkline in $array) {
-        $checkline = $checkline.Trim()
-        if ($cleanline -notlike $checkline) {
-            if ($checkline -match $tower) {
-                $invalid = 1
+<# #>
+[string[]]$newarray = @()
+foreach ($line in $array) {
+    if ($line.Length -gt 20) {
+        $tnum = $line.Substring(($line.IndexOf([char]40)+1),($line.IndexOf([char]41)-($line.IndexOf([char]40)+1)))
+        $broken = $line -split ","
+        $broken = $broken -split "->"
+        $tower = $broken[0].Trim()
+        $n = 2
+        do {
+            $therest = $broken[$n].Trim()
+            $n++
+        } until ($n -eq $broken.Count)
+        $newarray += "$tnum $tower $therest"
+    }
+}
+$newarray = ($newarray | Sort-Object)
+
+[string[]]$cleanarray = @()
+foreach ($line in $newarray) {
+    $line = $line.Substring($line.IndexOf(",")+1)
+    $cleanarray += $line
+}
+
+[string[]]$sortarray = @()
+foreach ($line in $newarray) {
+    $broken = $line -split " "
+    $tower = $broken[1].Trim()
+    $tnum = $broken[0].Trim()
+    $count = 0
+    if ($broken.Count -gt 2) {
+        Write-Host "$tower has the following weights:" -NoNewline
+        $twei = $tnum
+        Write-Host " $twei" -NoNewline
+        foreach ($entry in $broken) {
+            $count++
+            if ($count -gt 1) {
+                $entry = $entry.Trim()
+                $pos = $numarray1.IndexOf($entry.Trim())
+                $weight = $numarray2[$pos]
+                $twei += $weight
+                Write-Host "+$weight" -NoNewline           
             }
         }
-    }
-    if ($invalid -eq 0) {
-        Write-Host "Root Tower is: $tower"
-    }
-    $invalid = 0
-    #>
-#}
-
-
-    <#
-        $num = 0
-        do {
-            $word = $broken[$num]
-            $word = $word.Trim()
-            $entry = $entry.Trim()
-            if ($num -ne $entryval) {
-
-                $sortentry = $entry -split('') | sort
-                $entry = [system.String]::Join("",$sortentry)
-                $entry = $entry.Trim()
-                        
-                $sortword = $word -split('') | sort
-                $word = [system.String]::Join("",$sortword)
-                $word = $word.Trim()
-
-                #Write-Host "Comparing: $entry and $word from $line"
-
-                if ($entry -like $word) {
-                    $badline = 1
-                }
-            }
-            if ($badline -eq 1) {
-                $num = $broken.Count
-            } else {
-                $num++
-            }
-        } until ($num -eq $broken.Count)
-        $entryval++
-    }
-    $count++
-    if ($badline -eq 0) {
-        $goodlines++
+        Write-Host "=$twei"
+        $sortarray += "$twei $tower"
     }
 }
-Write-Host "There are $goodlines good passphases out of $count lines"
+
+$sortarray = ($sortarray | Sort-Object)
 
 #>
