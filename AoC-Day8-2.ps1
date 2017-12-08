@@ -1008,6 +1008,7 @@ c inc -20 if c == 10" -split "`n";
 
 [string[]]$var = @()
 [int[]]$vv = @()
+$max = 0
 
 foreach ($line in $array) {
     $vadd = ($line -split " ")[0].trim()
@@ -1045,6 +1046,7 @@ foreach ($line in $array) {
             "dec" { $varval -= $broken[2] }
             default { "UNKNOWN OPERATOR FOR ACTUAL ->",$broken[1],"<-" }
         }
+        if ($varval -gt $max) { $max = $varval }
         $vv[$varpos] = $varval
     }
 }
@@ -1052,3 +1054,4 @@ foreach ($line in $array) {
 $maxval = ($vv | measure -Maximum).Maximum
 
 Write-Host "Largest Register Value At End: $maxval"
+Write-Host "Largest Register Value During Operation: $max"
